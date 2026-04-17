@@ -35,12 +35,12 @@
 | Frontend Framework | Next.js (App Router) | 14.x |
 | Frontend Styling | Tailwind CSS | 3.x |
 | Frontend UI Library | Shadcn/UI | Latest |
-| Frontend State | Zustand | Latest |
+| Frontend State | Redux Toolkit | Latest |
 | Frontend Auth | NextAuth.js | Latest |
 | Backend Framework | Spring Boot | 3.2.4 |
 | Backend Language | Java | 17 |
 | Backend Security | Spring Security + JWT | 0.11.5 |
-| Database | MySQL | 8.x |
+| Database | Neon (PostgreSQL — Serverless) | Latest |
 | ORM | Spring Data JPA / Hibernate | Latest |
 | Build Tool (Backend) | Maven | 3.8+ |
 | Version Control | Git + GitHub | — |
@@ -56,7 +56,7 @@ Before starting this project, make sure the following tools are installed on you
 | **Node.js 20+** | Run Next.js dev server | https://nodejs.org |
 | **Java 17+** | Run Spring Boot | https://adoptium.net |
 | **Maven 3.8+** | Build Spring Boot project | https://maven.apache.org |
-| **MySQL 8** | Database server | https://dev.mysql.com |
+| **Neon Account** | Cloud PostgreSQL database (free) | https://neon.tech |
 | **Git** | Version control | https://git-scm.com |
 | **IntelliJ IDEA** | Backend IDE (recommended) | https://jetbrains.com |
 | **VS Code** | Frontend IDE (recommended) | https://code.visualstudio.com |
@@ -215,10 +215,10 @@ foreach ($folder in $folders) {
 | Dependency | Artifact ID | Purpose |
 |---|---|---|
 | Spring Web | `spring-boot-starter-web` | Build REST APIs |
-| Spring Data JPA | `spring-boot-starter-data-jpa` | Talk to MySQL via ORM |
+| Spring Data JPA | `spring-boot-starter-data-jpa` | Talk to Neon PostgreSQL via ORM |
 | Spring Security | `spring-boot-starter-security` | Secure API endpoints |
 | Spring Validation | `spring-boot-starter-validation` | Validate request data |
-| MySQL Connector | `mysql-connector-j` | Connect Java to MySQL |
+| PostgreSQL Driver | `postgresql` | Connect Java to Neon PostgreSQL |
 | JWT API | `jjwt-api` v0.11.5 | Create JWT tokens |
 | JWT Impl | `jjwt-impl` v0.11.5 | JWT implementation |
 | JWT Jackson | `jjwt-jackson` v0.11.5 | JWT JSON support |
@@ -292,14 +292,18 @@ server.servlet.context-path=/api/v1
 - All API routes will be prefixed with `/api/v1`
 - Example: `http://localhost:8080/api/v1/students`
 
-#### Database Config
+#### Database Config (Neon PostgreSQL)
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/school_management_db?createDatabaseIfNotExist=true
-spring.datasource.username=root
-spring.datasource.password=your_mysql_password
+# Get this connection string from: https://console.neon.tech
+spring.datasource.url=jdbc:postgresql://<your-neon-host>.neon.tech/school_management_db?sslmode=require
+spring.datasource.username=your_neon_username
+spring.datasource.password=your_neon_password
+spring.datasource.driver-class-name=org.postgresql.Driver
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
 ```
-- `createDatabaseIfNotExist=true` → Auto-creates DB on first run
-- Change `your_mysql_password` to your actual MySQL password
+- Go to [console.neon.tech](https://console.neon.tech) → Create Project → Copy the connection string
+- `sslmode=require` → Neon requires SSL — always include this!
+- No local DB install needed — Neon is fully cloud-based ☁️
 
 #### JPA/Hibernate Config
 ```properties
@@ -339,7 +343,7 @@ frontend/
 │   ├── layout/               ← Sidebar, Navbar
 │   └── shared/               ← Reusable components
 ├── lib/                      ← axios instance, utilities
-├── store/                    ← Zustand global state
+├── store/                    ← Redux Toolkit global state (slices)
 ├── types/                    ← TypeScript interfaces
 └── public/                   ← Static assets (images, icons)
 ```
@@ -446,7 +450,7 @@ school-management/
 | Part | Topic |
 |---|---|
 | **Part 2** | Initialize Next.js app + Install Tailwind + Shadcn/UI |
-| **Part 3** | Database Design — Create all MySQL Entities (Student, Teacher, Fee, etc.) |
+| **Part 3** | Database Design — Create all PostgreSQL Entities (Student, Teacher, Fee, etc.) |
 | **Part 4** | Spring Security + JWT Authentication setup |
 | **Part 5** | Login & Register APIs (Backend) + Login Page (Frontend) |
 | **Part 6** | Student Management Module (CRUD) |
