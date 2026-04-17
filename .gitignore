@@ -1,0 +1,30 @@
+# ========================
+# FRONTEND
+# ========================
+frontend/.next/
+frontend/node_modules/
+frontend/.env.local
+frontend/.env.production
+
+# ========================
+# BACKEND
+# ========================
+backend/target/
+backend/.mvn/
+backend/*.jar
+backend/*.war
+backend/src/main/resources/application-secret.properties
+
+# ========================
+# IDE FILES
+# ========================
+.idea/
+*.iml
+.vscode/settings.json
+.DS_Store
+
+# ========================
+# OS FILES
+# ========================
+Thumbs.db
+*.log
