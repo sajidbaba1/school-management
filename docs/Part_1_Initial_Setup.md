@@ -13,18 +13,19 @@
 
 1. [Tech Stack Overview](#tech-stack-overview)
 2. [Prerequisites](#prerequisites)
-3. [Step 1 — Configure Git Identity](#step-1--configure-git-identity)
-4. [Step 2 — Initialize Git Repository](#step-2--initialize-git-repository)
-5. [Step 3 — Create Root README.md](#step-3--create-root-readmemd)
-6. [Step 4 — Create Root .gitignore](#step-4--create-root-gitignore)
-7. [Step 5 — Create Backend Folder Structure](#step-5--create-backend-folder-structure)
-8. [Step 6 — Create Maven pom.xml](#step-6--create-maven-pomxml)
-9. [Step 7 — Create Main Application Class](#step-7--create-main-application-class)
-10. [Step 8 — Create application.properties](#step-8--create-applicationproperties)
-11. [Step 9 — Create Frontend Folder Structure](#step-9--create-frontend-folder-structure)
-12. [Step 10 — Git Commit & Push to GitHub](#step-10--git-commit--push-to-github)
-13. [Final Project Structure](#final-project-structure)
-14. [What's Coming Next](#whats-coming-next)
+3. [Step 0 — Create Project Folder & Open in VS Code](#step-0--create-project-folder--open-in-vs-code)
+4. [Step 1 — Configure Git Identity](#step-1--configure-git-identity)
+5. [Step 2 — Initialize Git Repository](#step-2--initialize-git-repository)
+6. [Step 3 — Create Root README.md](#step-3--create-root-readmemd)
+7. [Step 4 — Create Root .gitignore](#step-4--create-root-gitignore)
+8. [Step 5 — Create Backend Folder Structure](#step-5--create-backend-folder-structure)
+9. [Step 6 — Create Maven pom.xml](#step-6--create-maven-pomxml)
+10. [Step 7 — Create Main Application Class](#step-7--create-main-application-class)
+11. [Step 8 — Create application.properties](#step-8--create-applicationproperties)
+12. [Step 9 — Create Frontend Folder Structure](#step-9--create-frontend-folder-structure)
+13. [Step 10 — Git Commit & Push to GitHub](#step-10--git-commit--push-to-github)
+14. [Final Project Structure](#final-project-structure)
+15. [What's Coming Next](#whats-coming-next)
 
 ---
 
@@ -61,6 +62,119 @@ Before starting this project, make sure the following tools are installed on you
 | **IntelliJ IDEA** | Backend IDE (recommended) | https://jetbrains.com |
 | **VS Code** | Frontend IDE (recommended) | https://code.visualstudio.com |
 | **Postman** | API testing tool | https://postman.com |
+
+---
+
+## Step 0 — Create Project Folder & Open in VS Code
+
+> 🎯 **Purpose:** Create the root project folder on your computer and open the entire workspace in VS Code so all files are visible in the Explorer panel.
+
+---
+
+### 🅰️ Method 1 — Using Windows File Explorer (Easiest)
+
+```
+1. Open File Explorer (Win + E)
+2. Navigate to where you want your project
+   Example: C:\project\
+3. Right-click inside the folder → New → Folder
+4. Name it: School Management
+5. Open VS Code
+6. Go to: File → Open Folder
+7. Select: C:\project\School Management
+8. Click: Select Folder
+```
+
+✅ VS Code opens with the empty `School Management` folder in the Explorer panel (left sidebar).
+
+---
+
+### 🅱️ Method 2 — Using VS Code Directly
+
+```
+1. Open VS Code
+2. Click: File → Open Folder
+3. Navigate to C:\project\
+4. Click: New Folder button (top of dialog)
+5. Type: School Management → Press Enter
+6. Click: Select Folder
+```
+
+---
+
+### 🅲️ Method 3 — Using Terminal (Fastest)
+
+Open **any terminal** (CMD, PowerShell, or VS Code terminal) and run:
+
+```bash
+# Create the folder
+mkdir "C:\project\School Management"
+
+# Open it directly in VS Code
+code "C:\project\School Management"
+```
+
+> 💡 **Tip:** The `code` command opens VS Code from the terminal. If it doesn't work, install it:  
+> In VS Code → Press `Ctrl+Shift+P` → type `Shell Command` → click **"Install 'code' command in PATH"**
+
+---
+
+### 📁 Create `frontend` and `backend` Folders in VS Code Explorer
+
+Once the project is open in VS Code:
+
+```
+✅ In the LEFT SIDEBAR (Explorer Panel):
+
+1. Hover over the project name "SCHOOL MANAGEMENT" at the top
+2. You will see 4 icons appear:
+   📄 New File   📁 New Folder   🔄 Refresh   ⬇ Collapse
+3. Click the 📁 New Folder icon
+4. Type: backend → Press Enter
+5. Click the 📁 New Folder icon again
+6. Type: frontend → Press Enter
+```
+
+Your VS Code Explorer should now look like this:
+
+```
+📁 SCHOOL MANAGEMENT
+├── 📁 backend
+└── 📁 frontend
+```
+
+---
+
+### 🖥️ Opening the Integrated Terminal in VS Code
+
+All the commands in this guide are run in the **VS Code integrated terminal**:
+
+```
+Method 1: Press  Ctrl + `  (backtick key)
+Method 2: Go to  View → Terminal
+Method 3: Go to  Terminal → New Terminal
+```
+
+> The terminal automatically opens at the root of your project folder (`C:\project\School Management`), so all commands run in the right place.
+
+---
+
+### 🔌 Recommended VS Code Extensions — Install These First
+
+Press `Ctrl+Shift+X` to open Extensions panel and install:
+
+| Extension | Purpose |
+|---|---|
+| **ESLint** | JavaScript/TypeScript error checking |
+| **Prettier** | Auto-format code on save |
+| **Tailwind CSS IntelliSense** | Autocomplete for Tailwind classes |
+| **ES7+ React/Redux Snippets** | React + Redux code shortcuts |
+| **Auto Rename Tag** | Auto-renames matching HTML/JSX tags |
+| **GitLens** | Visualize Git history inside VS Code |
+| **Thunder Client** | Lightweight API tester (like Postman in VS Code) |
+| **Path Intellisense** | Autocomplete for file import paths |
+
+> 💡 For the **backend**, use **IntelliJ IDEA** (Community or Ultimate) — it has much better Java/Spring Boot support than VS Code.
 
 ---
 
