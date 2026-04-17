@@ -530,7 +530,7 @@ spring.application.name=school-management
 server.port=8080
 
 # application-dev.properties
-spring.datasource.url=jdbc:mysql://localhost:3306/school_dev_db
+spring.datasource.url=jdbc:postgresql://localhost:5432/school_dev_db
 spring.jpa.show-sql=true
 logging.level.com.school=DEBUG
 
@@ -724,39 +724,147 @@ Local State (useState)          → UI state: modal open/close, form inputs
 Server State (React Query)      → Data from APIs: students list, teacher data
                                    Handles caching, loading, refetching automatically
 
-Global State (Zustand)          → Auth user, user role, theme, notifications
+Global State (Redux Toolkit)    → Auth user, user role, theme, notifications
                                    Needs to be accessible anywhere in the app
 ```
 
-### Zustand Store — Auth Store Example
+### Why Redux Toolkit (RTK)?
+
+| Feature | Benefit |
+|---|---|
+| `createSlice` | Combines actions + reducers in one place — much less boilerplate |
+| `createAsyncThunk` | Handles async API calls with loading/error states built-in |
+| `RTK Query` | Built-in data fetching + caching (alternative to React Query) |
+| DevTools | Powerful Redux DevTools browser extension for debugging |
+| Industry Standard | Used in large enterprise projects — great for your resume |
+
+### Redux Store Setup
 
 ```ts
-// store/useAuthStore.ts
-import { create } from "zustand";
-import { persist } from "zustand/middleware";  // Persists to localStorage
+// store/index.ts — The central Redux store
+import { configureStore } from "@reduxjs/toolkit";
+import authReducer from "./slices/authSlice";
+import uiReducer from "./slices/uiSlice";
+
+export const store = configureStore({
+    reducer: {
+        auth: authReducer,    // Auth state (user, token, role)
+        ui: uiReducer,        // UI state (sidebar open, theme)
+    },
+});
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+```
+
+### Auth Slice Example
+
+```ts
+// store/slices/authSlice.ts
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { authService } from "../../lib/services/authService";
 
 interface AuthState {
     user: User | null;
     token: string | null;
     role: "ADMIN" | "TEACHER" | "STUDENT" | "PARENT" | null;
-    login: (user: User, token: string) => void;
-    logout: () => void;
-    isAuthenticated: () => boolean;
+    loading: boolean;
+    error: string | null;
 }
 
-export const useAuthStore = create<AuthState>()(
-    persist(
-        (set, get) => ({
-            user: null,
-            token: null,
-            role: null,
-            login: (user, token) => set({ user, token, role: user.role }),
-            logout: () => set({ user: null, token: null, role: null }),
-            isAuthenticated: () => get().token !== null,
-        }),
-        { name: "auth-store" }  // localStorage key
-    )
+const initialState: AuthState = {
+    user: null,
+    token: localStorage.getItem("token"),  // Rehydrate on refresh
+    role: null,
+    loading: false,
+    error: null,
+};
+
+// Async thunk — handles the API call + loading/error states automatically
+export const loginUser = createAsyncThunk(
+    "auth/login",
+    async (credentials: { email: string; password: string }, { rejectWithValue }) => {
+        try {
+            const response = await authService.login(credentials);
+            localStorage.setItem("token", response.data.token); // Persist token
+            return response.data;  // { user, token, role }
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || "Login failed");
+        }
+    }
 );
+
+const authSlice = createSlice({
+    name: "auth",
+    initialState,
+    reducers: {
+        logout: (state) => {
+            state.user = null;
+            state.token = null;
+            state.role = null;
+            localStorage.removeItem("token");
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(loginUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.user = action.payload.user;
+                state.token = action.payload.token;
+                state.role = action.payload.role;
+            })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload as string;
+            });
+    },
+});
+
+export const { logout } = authSlice.actions;
+export default authSlice.reducer;
+```
+
+### Using Redux in Components
+
+```tsx
+// In any component — read from store
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../store";
+import { logout, loginUser } from "../../store/slices/authSlice";
+
+function LoginPage() {
+    const dispatch = useDispatch();
+    const { loading, error, user } = useSelector((state: RootState) => state.auth);
+
+    const handleLogin = async (data) => {
+        dispatch(loginUser(data));  // Triggers async thunk
+    };
+
+    return (
+        <button onClick={handleLogin} disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
+        </button>
+    );
+}
+
+// Wrap entire app with Provider
+// app/layout.tsx
+import { Provider } from "react-redux";
+import { store } from "../store";
+
+export default function RootLayout({ children }) {
+    return (
+        <html>
+            <body>
+                <Provider store={store}>{children}</Provider>
+            </body>
+        </html>
+    );
+}
 ```
 
 ---
@@ -894,15 +1002,25 @@ export const config = {
 
 ## 16. Database Design Best Practices
 
-> **What it is:** Structuring your MySQL tables properly for performance and data integrity.
+> **What it is:** Structuring your **Neon PostgreSQL** tables properly for performance and data integrity.
+
+### Why Neon PostgreSQL?
+
+| Feature | Benefit |
+|---|---|
+| **Serverless PostgreSQL** | No server to manage — Neon auto-scales |
+| **Free Tier** | Generous free tier — perfect for development |
+| **Branching** | Create DB branches like Git branches (dev/prod) |
+| **Cloud-native** | Works perfectly with Vercel, Railway, Render deployments |
+| **PostgreSQL** | More powerful than MySQL — supports JSON, arrays, full-text search |
 
 ### Key Principles
 
 | Principle | Rule | Example |
 |---|---|---|
-| **Primary Keys** | Always use auto-increment `BIGINT` | `id BIGINT AUTO_INCREMENT` |
+| **Primary Keys** | Always use auto-increment `BIGINT` | `id BIGSERIAL PRIMARY KEY` |
 | **Timestamps** | Every table has `created_at`, `updated_at` | Use `@CreationTimestamp`, `@UpdateTimestamp` |
-| **Soft Delete** | Never hard delete — add `is_active` flag | `is_deleted BOOLEAN DEFAULT false` |
+| **Soft Delete** | Never hard delete — add `is_deleted` flag | `is_deleted BOOLEAN DEFAULT false` |
 | **Normalization** | No duplicate data across tables | Student class → FK to `classes` table |
 | **Indexing** | Index columns used in WHERE clauses | `email`, `roll_number`, `class_id` |
 
@@ -1089,7 +1207,7 @@ git push origin feature/student-module
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                    CLIENT (Browser)                          │
-│  Next.js App Router + Tailwind + Shadcn/UI + Zustand        │
+│  Next.js App Router + Tailwind + Shadcn/UI + Redux Toolkit  │
 │  Route Protection via Middleware + React Hook Form + Zod    │
 │  Axios Instance with Interceptors                           │
 └──────────────────────────┬──────────────────────────────────┘
@@ -1104,7 +1222,7 @@ git push origin feature/student-module
                            │ JPA / Hibernate
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   MySQL Database                             │
+│          Neon PostgreSQL Database (Cloud)                   │
 │  Normalized Tables | Soft Deletes | Indexed Columns         │
 │  Base Entity Audit Fields (created_at, updated_at)          │
 └─────────────────────────────────────────────────────────────┘

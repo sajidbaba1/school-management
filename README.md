@@ -8,9 +8,10 @@ A full-stack School Management System built with **Next.js** (Frontend) and **Sp
 
 | Layer | Technology |
 |---|---|
-| Frontend | Next.js 14 (App Router) + Tailwind CSS + Shadcn/UI |
-| Backend | Spring Boot 3 + Spring Security + JWT |
-| Database | MySQL 8 |
+| Frontend Framework | Next.js 14 (App Router) + Tailwind CSS + Shadcn/UI |
+| Frontend State | Redux Toolkit |
+| Backend Framework | Spring Boot 3 + Spring Security + JWT |
+| Database | Neon (PostgreSQL — Serverless) |
 | ORM | Spring Data JPA + Hibernate |
 | Auth | JWT (JSON Web Tokens) + Role-Based Access |
 
